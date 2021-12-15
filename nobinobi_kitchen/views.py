@@ -259,34 +259,24 @@ class KitchenView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
                 for date in time_range_absence.range(datetime.timedelta(days=1)):
                     # create time range of period
                     if date.date() in date_list:
-                        if absence.child in \
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "list"]:
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "list"].remove(absence.child)
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "total"] -= 1
-                            self.total_dict['age_group'][absence.child.age_group.id]["days"][date.isoweekday()][
-                                "normal"] -= 1
-                            self.total_dict['age_group'][absence.child.age_group.id]["days"][date.isoweekday()][
-                                "normal_list"].remove(absence.child)
-                        elif absence.child in \
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "list"]:
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "list"].remove(absence.child)
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "total"] -= 1
-                            self.total_dict['age_group'][absence.child.age_group.id]["days"][date.isoweekday()][
-                                "restrict"] -= 1
-                            del (self.total_dict['age_group'][absence.child.age_group.id]["days"][date.isoweekday()][
-                                "restrict_dict"][absence.child])
+                        dict_child_by_age_group = \
+                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()]
+                        total_dict_child_by_age_group = \
+                            self.total_dict['age_group'][absence.child.age_group.id]["days"][date.isoweekday()]
+
+                        if absence.child in dict_child_by_age_group["normal"]["list"]:
+                            dict_child_by_age_group["normal"]["list"].remove(absence.child)
+                            dict_child_by_age_group["normal"]["total"] -= 1
+                            if absence.child in total_dict_child_by_age_group["normal_list"]:
+                                total_dict_child_by_age_group["normal_list"].remove(absence.child)
+                                total_dict_child_by_age_group["normal"] -= 1
+
+                        elif absence.child in dict_child_by_age_group["restrict"]["list"]:
+                            dict_child_by_age_group["restrict"]["list"].remove(absence.child)
+                            dict_child_by_age_group["restrict"]["total"] -= 1
+                            if absence.child in total_dict_child_by_age_group["restrict_dict"]:
+                                del (total_dict_child_by_age_group["restrict_dict"][absence.child])
+                                total_dict_child_by_age_group["restrict"] -= 1
 
         return children_dict
 
@@ -447,32 +437,24 @@ class KitchenView(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
                     # create time range of period
                     if date.date() in date_list:
                         if absence.child and absence.child.classroom and absence.child.age_group:
-                            if absence.child in \
-                                children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                    "normal"][
-                                    "list"]:
-                                children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                    "normal"][
-                                    "list"].remove(absence.child)
-                                children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                    "normal"][
-                                    "total"] -= 1
+                            dict_child_by_age_group = \
+                                children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()]
+                            total_dict_child_by_age_group = \
                                 self.total_dict_kindergarten['age_group'][absence.child.age_group.id]["days"][
-                                    date.isoweekday()][
-                                    "normal"] -= 1
-                            elif absence.child in \
-                                children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                    "restrict"][
-                                    "list"]:
-                                children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                    "restrict"][
-                                    "list"].remove(absence.child)
-                                children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                    "restrict"][
-                                    "total"] -= 1
-                                self.total_dict_kindergarten['age_group'][absence.child.age_group.id]["days"][
-                                    date.isoweekday()][
-                                    "restrict"] -= 1
+                                    date.isoweekday()]
+                            if absence.child in dict_child_by_age_group["normal"]["list"]:
+                                dict_child_by_age_group["normal"]["list"].remove(absence.child)
+                                dict_child_by_age_group["normal"]["total"] -= 1
+                                if absence.child in total_dict_child_by_age_group["normal_list"]:
+                                    total_dict_child_by_age_group["normal_list"].remove(absence.child)
+                                    total_dict_child_by_age_group["normal"] -= 1
+
+                            elif absence.child in dict_child_by_age_group["restrict"]["list"]:
+                                dict_child_by_age_group["restrict"]["list"].remove(absence.child)
+                                dict_child_by_age_group["restrict"]["total"] -= 1
+                                if absence.child in total_dict_child_by_age_group["restrict_dict"]:
+                                    del (total_dict_child_by_age_group["restrict_dict"][absence.child])
+                                    total_dict_child_by_age_group["restrict"] -= 1
                         else:
                             logger.warning(
                                 "[Kitchen][Warning] Age group or Classroom for [%s] is not set" % absence.child)
@@ -718,43 +700,24 @@ class KitchenView2(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
                 for date in time_range_absence.range(datetime.timedelta(days=1)):
                     # create time range of period
                     if date.date() in date_list:
-                        if absence.child in \
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "list"]:
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "list"].remove(absence.child)
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "total"] -= 1
+                        dict_child_by_age_group = \
+                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()]
+                        total_dict_child_by_age_group = \
                             self.total_dict['age_group'][absence.child.age_group.id]["classroom"][
                                 absence.child.classroom][
-                                "days"][date.isoweekday()][
-                                "normal"] -= 1
-                            self.total_dict['age_group'][absence.child.age_group.id]["classroom"][
-                                absence.child.classroom][
-                                "days"][date.isoweekday()][
-                                "normal_list"].remove(absence.child)
-                        elif absence.child in \
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "list"]:
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "list"].remove(absence.child)
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "total"] -= 1
-                            self.total_dict['age_group'][absence.child.age_group.id]["classroom"][
-                                absence.child.classroom][
-                                "days"][date.isoweekday()][
-                                "restrict"] -= 1
-                            del (
-                                self.total_dict['age_group'][absence.child.age_group.id]["classroom"][
-                                    absence.child.classroom][
-                                    "days"][date.isoweekday()][
-                                    "restrict_dict"][absence.child])
+                                "days"][date.isoweekday()]
+                        if absence.child in dict_child_by_age_group["normal"]["list"]:
+                            dict_child_by_age_group["normal"]["list"].remove(absence.child)
+                            dict_child_by_age_group["normal"]["total"] -= 1
+                            if absence.child in total_dict_child_by_age_group["normal_list"]:
+                                total_dict_child_by_age_group["normal_list"].remove(absence.child)
+                                total_dict_child_by_age_group["normal"] -= 1
+                        elif absence.child in dict_child_by_age_group["restrict"]["list"]:
+                            dict_child_by_age_group["restrict"]["list"].remove(absence.child)
+                            dict_child_by_age_group["restrict"]["total"] -= 1
+                            if absence.child in total_dict_child_by_age_group["restrict_dict"]:
+                                del (total_dict_child_by_age_group["restrict_dict"][absence.child])
+                                total_dict_child_by_age_group["restrict"] -= 1
 
         return children_dict
 
@@ -904,34 +867,23 @@ class KitchenView2(LoginRequiredMixin, PermissionRequiredMixin, TemplateView):
                 for date in time_range_absence.range(datetime.timedelta(days=1)):
                     # create time range of period
                     if date.date() in date_list:
-                        if absence.child in \
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "list"]:
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "list"].remove(absence.child)
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "normal"][
-                                "total"] -= 1
+                        dict_child_by_age_group = \
+                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()]
+                        total_dict_child_by_age_group = \
                             self.total_dict_kindergarten['age_group'][absence.child.age_group.id]["classroom"][
-                                absence.child.classroom]["days"][
-                                date.isoweekday()][
-                                "normal"] -= 1
-                        elif absence.child in \
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "list"]:
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "list"].remove(absence.child)
-                            children_dict[absence.child.classroom][absence.child.age_group][date.isoweekday()][
-                                "restrict"][
-                                "total"] -= 1
-                            self.total_dict_kindergarten['age_group'][absence.child.age_group.id]["classroom"][
-                                absence.child.classroom]["days"][
-                                date.isoweekday()][
-                                "restrict"] -= 1
+                                absence.child.classroom]["days"][date.isoweekday()]
+                        if absence.child in dict_child_by_age_group["normal"]["list"]:
+                            dict_child_by_age_group["normal"]["list"].remove(absence.child)
+                            dict_child_by_age_group["normal"]["total"] -= 1
+                            if absence.child in total_dict_child_by_age_group["normal_list"]:
+                                total_dict_child_by_age_group["normal_list"].remove(absence.child)
+                                total_dict_child_by_age_group["normal"] -= 1
+                        elif absence.child in dict_child_by_age_group["restrict"]["list"]:
+                            dict_child_by_age_group["restrict"]["list"].remove(absence.child)
+                            dict_child_by_age_group["restrict"]["total"] -= 1
+                            if absence.child in total_dict_child_by_age_group["restrict_dict"]:
+                                del (total_dict_child_by_age_group["restrict_dict"][absence.child])
+                                total_dict_child_by_age_group["restrict"] -= 1
         return children_dict
 
     def create_total_dict(self):
